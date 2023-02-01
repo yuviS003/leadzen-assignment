@@ -9,9 +9,15 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import Pagination from "../utils/Pagination";
 
 export default function Home() {
   const [info, setInfo] = useState([]);
+  // const [currentInfo, setCurrentInfo] = useState([]);
+  // pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postPerPage, setPostPerPage] = useState(3);
+
   useEffect(() => {
     axios
       .get("https://jsonplaceholder.typicode.com/users")
@@ -26,10 +32,14 @@ export default function Home() {
       });
   }, []);
 
+  const lastPostIndex = currentPage * postPerPage;
+  const firstPostIndex = lastPostIndex - postPerPage;
+  const currentInfo = info.slice(firstPostIndex, lastPostIndex);
+
   return (
     <div className="min-w-screen min-h-screen overflow-auto p-10 bg-gray-200">
       <div className="w-[70%] min-h-[60%] mx-auto">
-        {info.map((data) => {
+        {currentInfo.map((data) => {
           return (
             <Accordion
               allowMultiple
@@ -127,6 +137,12 @@ export default function Home() {
             </Accordion>
           );
         })}
+        <Pagination
+          totalPosts={info.length}
+          postPerPage={postPerPage}
+          setCurrentPage={setCurrentPage}
+          currentPage={currentPage}
+        />
       </div>
     </div>
   );
